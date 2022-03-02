@@ -13,7 +13,11 @@ int main(int argc, char **argv) {
     srand(time(0));
     // * salad, soup, sandwich, pizza
     double cost[] = {9.95, 4.55, 13.25, 22.35};
-    int item = rando(0, 3);
-    printf("rando %d", item);
+    int rand = rando(0, 3);
+    double choice = cost[rand];
+    double tax = choice * (atof(argv[1])/100);
+    double tip = choice * (atof(argv[2])/100);
+    double final = choice + tax + tip;
 
+    printf("initial price: $%0.2f\nafter tax/tip price: $%0.2f", choice, final);
 }
