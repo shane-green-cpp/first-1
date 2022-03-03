@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <strings.h>
 
 //random number generation function
 int rando(int lower, int upper) {
@@ -23,9 +24,25 @@ int main() {
     int num;
     int count;
     int quit = 0;
-    int guess = -1;
+    char guess[] = "";
     int gamesPlayed = 0;
     struct Game gameResults[100];
+    int fileEmpty = 0;
+    //* file stuff
+    FILE *fptr;
+    fptr = fopen("saveMax.txt", "w+");
+    if (NULL != fptr) {
+    fseek (fptr, 0, SEEK_END);
+    int size = ftell(fptr);
+
+    if (0 == size) {
+        fileEmpty = 1;
+        putw(10, fptr);
+    } else {
+        max = getw(fptr);
+    }
+    fclose(fptr);
+}
 
     while (quit == 0) {
         printf("press 1 to play a game\n");
@@ -41,26 +58,25 @@ int main() {
                 printf("guess away...\n");
                 //* game loop
                 while (play == 1) {
-                    scanf(" %d", &guess);
+                    scanf(" %s", guess);
                     count++;
-                    printf("%d", guess);
-                    if (guess == -1) {
+                    printf("%s", guess);
+                    if (strcmp( guess, "q") == 0) {
                         printf("GAME ENDED\nreturning to menu...");
                         play = 0;
                         curGame.win = 0;
                         curGame.guessCount = count;
                         gameResults[gamesPlayed] = curGame;
                         gamesPlayed++;
+                        break;
                     }
-                    else if ((int)guess > num) {
+                    else if (atoi(guess) > num) {
                         printf("HIGH\n");
-                        guess = -1;
                     }
-                    else if ((int)guess < num) {
+                    else if (atoi(guess) < num) {
                         printf("LOW\n");
-                        guess = -1;
                     }
-                    else if ((int)guess == num) {
+                    else if (atoi(guess) == num) {
                         printf("YOU HAVE WON, IT TOOK %d GUESSES!!!\nreturning to menu...\n", count);
                         play = 0;
                         curGame.win = 1;
@@ -73,6 +89,13 @@ int main() {
             case 2:
                 printf("enter new max number\n");
                 scanf(" %d", &max);
+                if (max < 1) {
+                    printf("INVALID MAX CHOICE\nMAX SET AT 10\nreturning to menu...\n");
+                    max = 10;
+                }
+                fptr = fopen("saveMax.txt", "w+");
+                putw(max, fptr);
+                fclose(fptr);
                 break;
             case 3:
                 printf("Thank you for playing the Number Guessing Game!!!\nrecap of your games played\n");
